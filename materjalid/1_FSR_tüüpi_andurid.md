@@ -10,6 +10,27 @@ FSR surveandurid on tavaliselt õhukesed ja lamedad. Neid leidub erineva suuruse
 
 FSR paindeandurid on tavaliselt erineva pikkusega lamedad ribad. Nende takistus muutub (väheneb) painutamisel. Tuleb tähele panna, et leidub paindesensoreid, mille takistus muutub ainult ühele poole painutades ja ka neid mille takistus muutub mõlemale poole painutades. Voolujaguri moodustamiseks tuleb ka see andur kombineerida püsitakistiga. Tavaliselt annab hea tulemust (võimalikult suure mõõtevahemiku) 50  $k\Omega$ takisti.
 
-### FSR andurite liidestamise näide
+### FSR andurite Arduino UNO-ga liidestamise näide
 ![alt text](meedia/FSRnäide.png)
 [Interaktiivne simulatsioon](https://www.tinkercad.com/things/aLMZJny0Jl6-fsr?sharecode=-4llIroAReGc5yBg8hHEdGXIJQ0q4_8Rum3ZuQa14lw)
+
+Näitekood:
+~~~cpp
+#define flex A0
+#define force A1
+void setup()
+{
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  int flexData=analogRead(flex);
+  int forceData=analogRead(force);
+  Serial.print("Flex=");
+  Serial.println(flexData);
+  Serial.print("Force=");
+  Serial.println(forceData);
+  delay(100);
+}
+~~~
