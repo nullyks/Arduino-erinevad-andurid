@@ -47,3 +47,40 @@ Sensoril on kolm viiku: toide (1), maandus (2) ja signaal (3). Toide (1) ja maan
 ![alt text](meedia/rstSensorNäide.png)
 
 [Interaktiivne simulatsioon](https://www.tinkercad.com/things/4pnOvk3wPmM-mullaniiskusandur?sharecode=pWHr1Q7Gbze-wi4If8gJDYhszK5PpjZSsQYjYZZKnzA)
+
+Näitekood:
+~~~cpp
+#define Rled 4
+#define	Gled 3
+#define	Bled 2
+#define niiskus A0
+void setup()
+{
+  pinMode(Rled, OUTPUT);
+  pinMode(Gled, OUTPUT);
+  pinMode(Bled, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  int niiskusData=analogRead(niiskus);
+  Serial.print("Andur tagastas: ");
+  Serial.println(niiskusData);
+  int led=map(niiskusData,0,876,0,2);
+  if(led==0){
+   digitalWrite(Rled, HIGH);
+   digitalWrite(Gled, LOW);
+   digitalWrite(Bled, LOW); 
+  }else if(led==1){
+   digitalWrite(Rled, LOW);
+   digitalWrite(Gled, HIGH);
+   digitalWrite(Bled, LOW);
+  }else if(led==2){
+   digitalWrite(Rled, LOW);
+   digitalWrite(Gled, LOW);
+   digitalWrite(Bled, HIGH);
+  }
+  delay(100);
+}
+~~~
