@@ -23,7 +23,7 @@ Selle õppematerjali puhul ei rakendata eristavat hindamist.
 *   1 x FSR paindeandur
 *   1 x FSR surveandur
 *   1 x TMP36 temperatuuriandur
-*   1 x PIR andur
+*   2 x PIR andur
 *   1 x HC-SR04 kaugusandur
 *   1 x DHT22 õhutemperatuuri ja -niiskusandur
 *   1 x mullaniiskusandur
