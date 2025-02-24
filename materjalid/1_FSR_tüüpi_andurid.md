@@ -1,6 +1,7 @@
 # FSR tüüpi andurid
 
-FSR-tüüpi andurid, mida tuntakse ka jõu-anduritena, kasutavad mehaanilise mõjui mõõtmiseks nende elektrilise takistuse muutumist. Suurema surve korral langeb anduri takistus, võimaldades seeläbi mõõta rakendatud jõudu.
+FSR-tüüpi andurid, mida tuntakse ka jõu-anduritena, kasutavad mehaanilise mõju mõõtmiseks nende elektrilise takistuse muutumist. Suurema surve korral langeb anduri takistus, võimaldades seeläbi mõõta rakendatud jõudu. Takistitest rääkisime pikemalt [selles õppematerjalis](https://github.com/nullyks/Arduino-baaselemendid/blob/main/materjalid/1_takistid.md).
+
 Andurite sisemuses on tavaliselt spetsiaalne polümeerkiht, millesse on lisatud juhtivaid osakesi. Rakendatud jõu mõjul tihenevad need osakesed, mille tulemusena paraneb anduri juhtivus ja langeb anduri elektriline takistus. See mõõdetud takistuse langus võimaldab elektroonikasüsteemidel tuvastada ja hinnata rakendatud jõu suurust.
 
 Põhiline viis FSR-anduri kasutamiseks Arduinoga on luua voolujagur. Voolujaguri puhul ühendatakse FSR-andur koos kindla takistusega järjestikku ja lugeda analoogviiguga pinget nende kahe elemendi vahepunktist. Kui andurile rakendatakse jõudu või survet, muutub FSR-i takistus. See omakorda muudab ka voolujaguri väljundpinget Arduino analoogviigul.  

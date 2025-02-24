@@ -2,7 +2,7 @@
 
 DHT22 on digitaalne õhuniiskuse- ja temperatuuriandur. Anduri temperatuuri mõõtepiirkonnaks on -40 °C kuni +80 °C ning suhtelise õhuniiskuse mõõtmine katab vahemikku 0% kuni 100%. Mõõdetud väärtused edastatakse digitaalses vormis, mis lihtsustab andmete töötlemist mikrokontrollerite ja teiste seadmetega.
 
-DHT22 tööpõhimõte põhineb kahe erineva anduri integratsioonil. Temperatuuri mõõtmiseks kasutatakse termistorit, mille elektritakistus muutub vastavalt temperatuurile, samas kui niiskuse määramiseks kasutatakse kapatsitiivset (mahutundlikku) andurit, kus niiskuse mõjul muutub dielektrilise materjali isolatsioonivõime. Mõlemad mõõtmised teisendatakse digitaalsignaalideks, mida edastatakse andmeside viigu kaudu kasutades tootjapoolset andmesideprotokolli.
+DHT22 tööpõhimõte põhineb kahe erineva anduri integratsioonil. Temperatuuri mõõtmiseks kasutatakse termistorit ([temperatuurist sõltuv takisti](https://github.com/nullyks/Arduino-baaselemendid/blob/main/materjalid/1_takistid.md)), mille elektritakistus muutub vastavalt temperatuurile, samas kui niiskuse määramiseks kasutatakse kapatsitiivset (mahutundlikku) andurit, kus niiskuse mõjul muutub dielektrilise materjali isolatsioonivõime. Mõlemad mõõtmised teisendatakse digitaalsignaalideks, mida edastatakse andmeside viigu kaudu kasutades tootjapoolset andmesideprotokolli.
 
 ![alt text](meedia/DHT22.png)
 
