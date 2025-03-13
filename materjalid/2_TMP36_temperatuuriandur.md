@@ -20,7 +20,7 @@ Arduino UNO puhul on mõistlik kasutada TMP36 toitepingeks 5V. Maanduseks sobib 
 
 Peale analoogviigult näidu lugemist (saame täisarvu vahemikus 0 - 1023), tuleb see teisalda voltideks. Seda saame teha järgmiselt:
 
-$voldid=sensori\_näit*(5/1023)$
+$voldid=sensori\_{näit}*(5/1023)$
 
 Ülaltoodud graafikult näeme, et 0 kraadi Celsiuse juures on sensori näit 0.5V - see on meie nihe. Samuti näeme, et sensori väljundi muutus 0.1V tähendab temperatuuri kasvu 10 kraadi Celsiuse võrra. Seega saame temperatuuri arvutada järgmiselt:
 
