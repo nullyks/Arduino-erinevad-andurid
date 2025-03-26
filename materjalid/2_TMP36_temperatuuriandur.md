@@ -26,7 +26,7 @@ $voldid=sensori\_{näit}*(5/1023)$
 
 $temperatuur=(voldid-0.5)*100$
 
-![alt text](meedia\TMP36näide.png)
+![alt text](meedia/TMP36näide.png)
 [Interaktiivne simulatsioon](https://www.tinkercad.com/things/aYrG2vh1uUn-tmp36?sharecode=k2pp1kucaxTrZC0PG6rnkitRuZ47a5o3cB9-ljA1rHg)
 
 Näitekood:
