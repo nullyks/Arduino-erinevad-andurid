@@ -5,7 +5,7 @@ Levinud mullaniiskuse andurid töötavad kahel erineval põhimõttel - mõõdeta
 Ülaltoodust järeldub, et mõlema anduri puhul ei saa me tegelikult täpselt teada mulla suhtelist niiskust, vaid ainult niiskuse muutumist võrreldes mingi kindla algväärtusega. Seega tuleb oma rakenduses see algväärtus kalibreerida.
 
 ## Mahutavuspõhise mullaniiskussensori liidestamine Arduino UNO-ga
-![alt text](meedia/capSensor.png)
+![Mahupõhine mullaniiskussensor ja selle ühendamine](meedia/capSensor.png)
 *Allikas: https://media.digikey.com/pdf/data%20sheets/dfrobot%20pdfs/sen0193_web.pdf*
 
 Sensoril on kolm viiku: signaal (1), toide (2), maandus (3). Toide (2) ja maandus (3) ühendatakse vastavalt Arduino UNO 5V ja GND viikudega. Signaali (1) loetakse analoogviigu abil.
@@ -38,45 +38,46 @@ delay(100);
 
 ## Takistuspõhise mullaniiskussensori liidestamine Arduino UNO-ga
 
-![alt text](meedia/rstSensor.jpg)
+![Takistusepõhine mullaniiskussensor](meedia/rstSensor.jpg)
 
 *Allikas: https://github.com/sparkfun/Soil_Moisture_Sensor*
 
 Sensoril on kolm viiku: toide (1), maandus (2) ja signaal (3). Toide (1) ja maandus (2) ühendatakse vastavalt Arduino UNO 5V ja GND viikudega. Signaali (3) loetakse analoogviigu abil.
 
-![alt text](meedia/rstSensorNäide.png)
+![Takistusepõhise mullaniiskussensori ühendamine](meedia/rstSensorNäide.png)
 
 [Interaktiivne simulatsioon](https://www.tinkercad.com/things/4pnOvk3wPmM-mullaniiskusandur?sharecode=pWHr1Q7Gbze-wi4If8gJDYhszK5PpjZSsQYjYZZKnzA)
 
 Näitekood:
 ~~~cpp
-#define Rled 4
-#define	Gled 3
-#define	Bled 2
-#define niiskus A0
+#define Rled 4 //punast LEDi juhime selle viiguga
+#define	Gled 3 //rohelist LEDi juhime selle viiguga
+#define	Bled 2 //sinist LEDi juhime selle viiguga
+#define niiskus A0 //senori andmeid loeme selle viiguga
 void setup()
 {
   pinMode(Rled, OUTPUT);
   pinMode(Gled, OUTPUT);
   pinMode(Bled, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(9600); //alustame Serial ühenduse, et oleks kuhugi andmeid kirjutada
 }
 
 void loop()
 {
-  int niiskusData=analogRead(niiskus);
+  int niiskusData=analogRead(niiskus); //loeme sensori andmed
+  //Kirjutame toored andmed Serial ühenduse peale
   Serial.print("Andur tagastas: ");
   Serial.println(niiskusData);
-  int led=map(niiskusData,0,876,0,2);
-  if(led==0){
+  int led=map(niiskusData,0,876,0,2); //vastustame toored andmed kolme võrdsesse vahemikku
+  if(led==0){ //esimene vahemik, punane LED põleb = liiga kuiv
    digitalWrite(Rled, HIGH);
    digitalWrite(Gled, LOW);
    digitalWrite(Bled, LOW); 
-  }else if(led==1){
+  }else if(led==1){ // teine vahemik, roheline LED põleb = paras niiskus
    digitalWrite(Rled, LOW);
    digitalWrite(Gled, HIGH);
    digitalWrite(Bled, LOW);
-  }else if(led==2){
+  }else if(led==2){ // kolmas vahemik, sinine LED põleb = liiga niiske
    digitalWrite(Rled, LOW);
    digitalWrite(Gled, LOW);
    digitalWrite(Bled, HIGH);

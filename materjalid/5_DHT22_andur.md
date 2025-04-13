@@ -4,7 +4,7 @@ DHT22 on digitaalne õhuniiskuse- ja temperatuuriandur. Anduri temperatuuri mõ�
 
 DHT22 tööpõhimõte põhineb kahe erineva anduri integratsioonil. Temperatuuri mõõtmiseks kasutatakse termistorit ([temperatuurist sõltuv takisti](https://github.com/nullyks/Arduino-baaselemendid/blob/main/materjalid/1_takistid.md)), mille elektritakistus muutub vastavalt temperatuurile, samas kui niiskuse määramiseks kasutatakse kapatsitiivset (mahutundlikku) andurit, kus niiskuse mõjul muutub dielektrilise materjali isolatsioonivõime. Mõlemad mõõtmised teisendatakse digitaalsignaalideks, mida edastatakse andmeside viigu kaudu kasutades tootjapoolset andmesideprotokolli.
 
-![alt text](meedia/DHT22.png)
+![DHT22 viikude skeem](meedia/DHT22.png)
 
 *Allikas: https://www.electroschematics.com/am2302-dht22-datasheet/*
 
@@ -14,13 +14,13 @@ Anduril on neli viiku, millest tegelikult kasutatakse ainult kolme: VCC e. toide
 
 DHT22 andmesideprotokolli implementeerimiseks on mõistlik kasutada mõnd juba olemasolevat teeki, mis lihtsustab oluliselt anduri lugemist. Järgnevas näites kasutatakse [SimpleDHT](https://github.com/winlinvip/SimpleDHT) teeki.
 
-![alt text](meedia/DHT22näide.png)
+![DHT22 ühendamine Arduino UNO-ga](meedia/DHT22näide.png)
 
 Koodinäide:
 
 ~~~cpp
 #include <SimpleDHT.h>
-#define pinDHT22 2
+#define pinDHT22 2 //selle viigu kaudu loeme andmeid
 SimpleDHT22 dht22(pinDHT22); //defineerime sensoriobjekti
 
 void setup() {

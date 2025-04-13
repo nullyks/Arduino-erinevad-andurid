@@ -1,6 +1,9 @@
 # Erinevate andurite liidestamine Arduino UNO-ga
 See õppematerjal selgitab TMP36 temperatuurianduri, FSR tüüpi surve ja paindeanduri, HC-SR04 kaugusanduri, PIR tüüpi liikumisanduri, DHT22 õhuniiskus- ja temperatuurianduri ning mahutavuspõhise mullaniiskusanduri kasutamist ja Arduino UNO-ga liidestamist.
 
+## Õpieesmärgid
+Selle materjali läbimise järel oskad mõõta temperatuuri ja mull- ning õhuniiskust kasutades erinevaid sensoreid. Samuti oskad mõõta kaugust kasutades ultrahelisensorit. Lisaks saad teada, kuidas muuttakistite abil on võimalik mõõta paindenurka ja survet. Lihtsa PIR mooduli abil õpid tuvastama liikumist.
+
 ## Õpiväljundid
 Materjali edukalt läbinud õppija:
 * loetleb ja kirjeldab erinevaid arendusplaatidega liidestatavaid sensoreid;

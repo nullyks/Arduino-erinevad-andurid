@@ -2,7 +2,7 @@
 
 Anduri tööpõhimõte põhineb ultraheli levikul ja kajaefektil. HC-SR04 saadab lühikese kindla mustriga ultraheli impulsi (tavaliselt 40 kHz sagedusel), mis levib õhus ja tabab lähedal asuvat objekti. Kui impulss tabab objekti, peegeldub see tagasi anduri poole ning andur registreerib peegelduse.   
 
-![alt text](meedia/HC-SR04.png)
+![HC-SR04 ultraheliandur](meedia/HC-SR04.png)
 
 *Allikas: https://www.digikey.com/htmldatasheets/production/1979760/0/0/1/HC-SR04.pdf*
 
@@ -16,7 +16,7 @@ Peale selle impulsi saamist saadab andur välja ultraheliimpulsi ja paneb 5V voo
 
 Seega on võimalik mõõta 5V impulsi ajalist pikkust Echo (3) viigul ja teades heli levimise kiirust arvutada välja kui kaugel on takistus. Meeles tuleb pidada, et helilained läbivad peegeldudes kauguse kaks korda, seega tuleb tulemus jagada kahega.
 
-![alt text](meedia/HC-SR04näide.png)
+![HC-SR04 anduri ühendamine Arduino UNO-ga](meedia/HC-SR04näide.png)
 
 [Interaktiivne simulatsioon](https://www.tinkercad.com/things/dtUHvXsMKNP-hc-sr04?sharecode=o7Vm0Tu1vb1w4WIx2713XlgD4eDhw3NN5Mk8uaHOkqo)
 

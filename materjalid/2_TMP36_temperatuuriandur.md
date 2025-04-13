@@ -4,13 +4,13 @@ TMP36 on levinud temperatuuriandur. Anduri tööpõhimõte põhineb sisseehitatu
 
 TMP36 andureid on võimalik leida erinevates korpustes või pakendi tüüpides *(ingl package type)* Meie vaatame siin kõige levinumat TO-92 pakendis TMP36 andurit. Selles pakendis on anduril kolm viiku - toitepinge (1), väljund (2) ja maandus (3).
 
-![alt text](meedia/TMP36_TO-92.png)
+![TMP36 viikude skeem](meedia/TMP36_TO-92.png)
 
 *Allikas: https://www.arduino.cc/en/uploads/Main/TemperatureSensor.pdf*
 
 Anduri väljundist loetava pinge ja mõõdetava temperatuuri suhet kirjeldab järgmisel graafikul joon b. Nagu näeme on tegemist lineaarse suhtega. Graafikult saame välja lugeda, et sensori mõõtevahemik on -40°C - 125°C 
 
-![alt text](meedia/TMP36_graafik.png)
+![TMP36 näidu teisaldamise graafik](meedia/TMP36_graafik.png)
 
 Allikas: https://www.arduino.cc/en/uploads/Main/TemperatureSensor.pdf
 
@@ -26,22 +26,23 @@ $voldid=sensori\_{näit}*(5/1023)$
 
 $temperatuur=(voldid-0.5)*100$
 
-![alt text](meedia/TMP36näide.png)
+![TMP36 ühendamise näide](meedia/TMP36näide.png)
 [Interaktiivne simulatsioon](https://www.tinkercad.com/things/aYrG2vh1uUn-tmp36?sharecode=k2pp1kucaxTrZC0PG6rnkitRuZ47a5o3cB9-ljA1rHg)
 
 Näitekood:
 ~~~cpp
-#define tmp36 A0
+#define tmp36 A0 //loeme andurit A0 viigu kaudu
 float voldid, temperatuur;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600); //alustame Serial üheduse, et oleks kuhugi andmeid saata
 }
 
 void loop() {
   int tmp36Data = analogRead(tmp36);// Loeme anduri väärtuse
   voldid = tmp36Data * (5.0 / 1023.0); // Teisendame väärtuse pingeks
   temperatuur = (voldid - 0.5) * 100.0;  // Teisendame pingest temperatuuriks
+  //kirjutame andmed välja Serial ühenduse peale
   Serial.print("Moodetud pinge: ");
   Serial.print(voldid);
   Serial.print(" V, Temperatuur: ");

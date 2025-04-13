@@ -6,7 +6,7 @@ Anduri tööpõhimõte põhineb infrapuna energia muutumise tuvastamisel. Lihtsa
 
 Pildil on lihtne PIR andur mudel: HC-SR501
 
-![alt text](meedia/HC-SR501.png)
+![PIR anduri skeem](meedia/HC-SR501.png)
 
 *Allikas: https://static.rapidonline.com/pdf/74-1108_v2.pdf*
 
@@ -19,7 +19,7 @@ Sensoril endal on ka kaks potentsiomeetrit, millest esimene muudab sensori tundl
 
 Lisaks on anduril veel töörežiimi viigud L ja H, mille lühistamisel maandusega saab valida korduvsignaali (H) ja mitte-korduvsignaali (L) vahel. Korduvsignaali puhul pannakse liikumise tuvastamisel signaalviigule pinge 3.3V ja see püsib seal signaalipikkuse lõpuni, misjärel pinge muutub 0V peale. Kui liikumine jätkub, siis siis kogu tsükkel kordub. Mitte-korduvsignaali puhul jääb 3.3V pinge signaalviigule kuni liikumise lõpuni pluss signaalipikkusega määratud aeg.
 
-![alt text](meedia/PIRnäide.png)
+![PIR anduri ühendamise näide Arduinoga](meedia/PIRnäide.png)
 
 **NB!** simulatsioonikeskkonnas on PIR anduri viikudel teistsugune järjekord.
 
@@ -27,8 +27,8 @@ Lisaks on anduril veel töörežiimi viigud L ja H, mille lühistamisel maanduse
 
 Koodinäide:
 ~~~cpp
-#define pir 3
-#define led 2
+#define pir 3 //selle viigu kaudu loeme PIR-i näitu
+#define led 2 //selle viigu abil juhime LED-i
 void setup()
 {
   pinMode(led, OUTPUT);
@@ -37,11 +37,11 @@ void setup()
 
 void loop()
 {
-  int pirData=digitalRead(pir);
-  if(pirData==HIGH){
-  	digitalWrite(led, HIGH);
-  }else{
-  	digitalWrite(led, LOW); 
+  int pirData=digitalRead(pir); //loeme PIR näidu
+  if(pirData==HIGH){ //kui on liikumine
+  	digitalWrite(led, HIGH); //LED põlema
+  }else{ //kui ei ole liikumist
+  	digitalWrite(led, LOW);//LED kustu
   }
   delay(100);
 }
