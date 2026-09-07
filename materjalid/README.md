@@ -1,9 +1,9 @@
 # Õppematerjali osad
 
-* [FSR tüüpi andurid](1_FSR_tüüpi_andurid.md)
+* [FSR-jõuandur ja paindeandur](1_FSR_tüüpi_andurid.md)
 * [TMP36 temperatuuriandur](2_TMP36_temperatuuriandur.md)
-* [HC-SR04 ultrahelipõhine kaugusandur](3_HC-SR04_kaugusandur.md)
-* [PIR andurid](4_PIR_tüüpi_andurid.md)
-* [DHT22 õhutemperatuuri- ja niiskusandur](5_DHT22_andur.md)
+* [HC-SR04 ultraheli-kaugusandur](3_HC-SR04_kaugusandur.md)
+* [HC-SR501 PIR-liikumisandur](4_PIR_tüüpi_andurid.md)
+* [DHT22 temperatuuri- ja õhuniiskusandur](5_DHT22_andur.md)
 * [Mullaniiskusandurid](6_mullaniiskusandur.md)
 * [Iseseisvad ülesanded](7_iseseisvad_ülesanded.md)
