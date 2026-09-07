@@ -13,8 +13,8 @@ Alljärgnev nimekiri sisaldab inimesi, kes on:
 
 ## Kaastöötajate nimekiri
 
-| Nimi | Roll | Kontakt / GitHub/ e-mail|
-|------|------|:-----------------:|
-| Martti Raavel | Kaastöö autor | [@mrtrvl](https://github.com/mrtrvl) |
+| Nimi | Roll | Kontakt / GitHub / e-post |
+|---|---|:---:|
+| Martti Raavel | Kaastöötegija | [@mrtrvl](https://github.com/mrtrvl) |
 
 Tahad liituda? Vaata faili [CONTRIBUTING.md](./CONTRIBUTING.md).
