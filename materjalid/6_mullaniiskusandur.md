@@ -1,87 +1,152 @@
-# Mullaniiskuse andurid
+# Mullaniiskusandurid
 
-Levinud mullaniiskuse andurid töötavad kahel erineval põhimõttel - mõõdetakse, mulla elektrilist takistust kahe kontaktpunkti vahel (takistuspõhine mullaniiskusandur) või moodustatakse kahe elektroodi abil [kondensaator](https://github.com/nullyks/Arduino-baaselemendid/blob/main/materjalid/4_kondensaatorid.md), kus muld toimib dielektrikuna (mahutavuspõhine mullaniiskusandur). Takistuspõhise mullaniiskusanduri puhul on takistus seda väiksem, mida niiskem on muld. Mahutavuspõhise mullaniiskusanduri puhul mõõdetakse aega, mis kulub kindla pinge juures kondensaatori laadimiseks, kuna dielektrikuna selles kondensaatoris toimib muld ja märjema mulla dielektriline konstant on suurem, siis mida märjem on muld, seda kiiremine kondensaator täis laaditakse.
+Lihtsad mullaniiskusandurid ei mõõda tavaliselt mulla veesisaldust otse. Need mõõdavad mõnda niiskusega seotud elektrilist omadust ning annavad selle põhjal suhtelise näidu.
 
-Ülaltoodust järeldub, et mõlema anduri puhul ei saa me tegelikult täpselt teada mulla suhtelist niiskust, vaid ainult niiskuse muutumist võrreldes mingi kindla algväärtusega. Seega tuleb oma rakenduses see algväärtus kalibreerida.
+## Takistuspõhine ja mahutavuspõhine andur
 
-## Mahutavuspõhise mullaniiskussensori liidestamine Arduino UNO-ga
-![Mahupõhine mullaniiskussensor ja selle ühendamine](meedia/capSensor.png)
-*Allikas: https://media.digikey.com/pdf/data%20sheets/dfrobot%20pdfs/sen0193_web.pdf*
+Takistuspõhisel anduril on kaks mullaga kokkupuutuvat elektroodi. Niiskuse ja lahustunud soolade lisandumisel suureneb mulla elektrijuhtivus ning elektroodide vaheline takistus üldjuhul väheneb. Näitu mõjutavad lisaks veesisaldusele mulla koostis, soolsus, temperatuur ja elektroodide seisukord.
 
-Sensoril on kolm viiku: signaal (1), toide (2), maandus (3). Toide (2) ja maandus (3) ühendatakse vastavalt Arduino UNO 5V ja GND viikudega. Signaali (1) loetakse analoogviigu abil.
+Takistuspõhise anduri metallist elektroodid korrodeeruvad alalisvoolu toimel. Anduri kasutusea pikendamiseks tuleks sellele anda toide ainult mõõtmise ajaks ning pikaajaliseks mõõtmiseks tuleks eelistada mahutavuspõhist andurit.
+
+Mahutavuspõhise anduri elektroodid moodustavad [kondensaatori](https://github.com/nullyks/Arduino-baaselemendid/blob/main/materjalid/4_kondensaatorid.md). Mulla veesisalduse muutumine muudab elektroodide vahelise keskkonna dielektrilisi omadusi ja seega anduri mahtuvust. Anduri elektroonika teisendab selle muutuse analoogpingeks.
+
+Mahutavuspõhise anduri väljundväärtuse suund sõltub andurimudelist. Mõnel anduril näit niiskuse suurenemisel väheneb ja mõnel suureneb. Seetõttu ei tohi programmis eeldada kindlat suunda ilma konkreetset andurit kontrollimata.
+
+## Kalibreerimine
+
+Mõlema anduritüübi näitu tuleb kasutatava anduri ja mulla jaoks kalibreerida.
+
+1. Mõõda anduri näit kuivas võrdlusolukorras ja salvesta see kuiva näiduna.
+2. Mõõda näit märjas võrdlusolukorras ja salvesta see märja näiduna.
+3. Teisenda nende kahe väärtuse vahele jäävad näidud suhteliseks skaalaks, näiteks 0–100%.
+4. Korda kalibreerimist, kui vahetad andurit, mulda või anduri paigaldusviisi.
+
+Tootja näidiskalibreerimises kasutatakse kuiva väärtuse leidmiseks andurit õhus ja märja väärtuse leidmiseks anduri mõõteosa vees. Vette tohib asetada ainult anduri selleks mõeldud mõõteosa. Elektroonikakomponendid ja ühenduspistik peavad jääma kuivaks.
+
+Selliselt saadud protsent on kalibreeritud suhteline näit, mitte laboratoorselt määratud mulla veesisaldus.
+
+## Mahutavuspõhise mullaniiskusanduri ühendamine Arduino UNO-ga
+
+![Mahutavuspõhine mullaniiskusandur ja selle ühendamine](meedia/capSensor.png)
+
+*Allikas: [DFRoboti SEN0193 andmeleht](https://media.digikey.com/pdf/data%20sheets/dfrobot%20pdfs/sen0193_web.pdf)*
+
+Anduril on kolm viiku: signaal, toide ja maandus. Ühenda toide Arduino 5 V viiguga, maandus GND-viiguga ning signaal analoogsisendiga A0.
+
+Joonisel on Arduino UNO R3 plaat. Sama ühenduspõhimõte ja näitekood sobivad ka Arduino UNO R4 WiFi plaadile, kui kasutatakse vaikimisi 10-bitist analoog-digitaalmuunduri resolutsiooni.
+
+Allolevad `KUIV_NAIT` ja `MARG_NAIT` on näidisväärtused. Asenda need oma anduri kalibreerimisel saadud väärtustega.
 
 Näitekood:
+
 ~~~cpp
-//sensori tagastatav väärtus kuivana õhu käes
-#define kuivData 520 
-//sensori tagastatav väärtus kui see on kastetud vette
-#define veesData 260 
-int vahemikud = (kuivData - veesData)/3; 
-int mullaNiiskus = 0;
+const int ANDURI_VIIK = A0;
+
+// Asenda need oma anduri kalibreerimisel saadud väärtustega.
+const int KUIV_NAIT = 520;
+const int MARG_NAIT = 260;
 
 void setup() {
- Serial.begin(9600); 
+  Serial.begin(9600);
 }
 
 void loop() {
-mullaNiiskus = analogRead(A0); //eeldame, et sensori signaalviik on ühendatud A0-ga
-if(mullaNiiskus > veesData && mullaNiiskus < (veesData + vahemikud)){
-    Serial.println("Väga niiske");
-}else if(mullaNiiskus > (veesData + vahemikud) && mullaNiiskus < (kuivData - vahemikud)){
-    Serial.println("Niiske");
-}else if(mullaNiiskus < kuivData && mullaNiiskus > (kuivData - vahemikud)){
+  int toorNait = analogRead(ANDURI_VIIK);
+
+  // Teisendame kalibreeritud vahemiku suhteliseks skaalaks 0–100%.
+  int niiskusProtsent =
+      map(toorNait, KUIV_NAIT, MARG_NAIT, 0, 100);
+
+  // Piirame tulemuse juhuks, kui näit väljub kalibreeritud vahemikust.
+  niiskusProtsent = constrain(niiskusProtsent, 0, 100);
+
+  Serial.print("Anduri toornäit: ");
+  Serial.print(toorNait);
+  Serial.print(", suhteline niiskus: ");
+  Serial.print(niiskusProtsent);
+  Serial.println(" %");
+
+  if (niiskusProtsent < 33) {
     Serial.println("Kuiv");
+  } else if (niiskusProtsent < 67) {
+    Serial.println("Niiske");
+  } else {
+    Serial.println("Väga niiske");
+  }
+
+  delay(500);
 }
-delay(100);
-} 
 ~~~
 
-## Takistuspõhise mullaniiskussensori liidestamine Arduino UNO-ga
+## Takistuspõhise mullaniiskusanduri ühendamine Arduino UNO-ga
 
-![Takistusepõhine mullaniiskussensor](meedia/rstSensor.jpg)
+![Takistuspõhine mullaniiskusandur](meedia/rstSensor.jpg)
 
-*Allikas: https://github.com/sparkfun/Soil_Moisture_Sensor*
+*Allikas: [SparkFuni Soil Moisture Sensor](https://github.com/sparkfun/Soil_Moisture_Sensor)*
 
-Sensoril on kolm viiku: toide (1), maandus (2) ja signaal (3). Toide (1) ja maandus (2) ühendatakse vastavalt Arduino UNO 5V ja GND viikudega. Signaali (3) loetakse analoogviigu abil.
+Moodulil on kolm viiku: toide, maandus ja analoogsignaal. Ühenda toide Arduino 5 V viiguga, maandus GND-viiguga ning signaal analoogsisendiga A0.
 
-![Takistusepõhise mullaniiskussensori ühendamine](meedia/rstSensorNäide.png)
+**NB!** Eri tootjate moodulitel võib viikude järjestus erineda. Enne ühendamist kontrolli moodulile trükitud tähiseid.
 
-[Interaktiivne simulatsioon](https://www.tinkercad.com/things/4pnOvk3wPmM-mullaniiskusandur?sharecode=pWHr1Q7Gbze-wi4If8gJDYhszK5PpjZSsQYjYZZKnzA)
+Takistuspõhise anduri elektroodid korrodeeruvad, kui need on pikalt niiskes mullas ja pidevalt pingestatud. Kasuta sellist andurit eelkõige lühiajalisteks katseteks ning eemalda pärast katset toide. Pikaajaliseks mõõtmiseks eelista mahutavuspõhist andurit.
+
+![Takistuspõhise mullaniiskusanduri ühendamine](meedia/rstSensorNäide.png)
+
+[Katseta ühendust Tinkercadi simulatsioonis](https://www.tinkercad.com/things/4pnOvk3wPmM-mullaniiskusandur?sharecode=pWHr1Q7Gbze-wi4If8gJDYhszK5PpjZSsQYjYZZKnzA)
+
+Tinkercadi ühendusjoonisel kasutatakse LED-idega 220 Ω takisteid. Füüsilise Arduino UNO R3 või UNO R4 WiFi ühenduse korral kasuta iga LED-iga 470 Ω takistit.
+
+Allolevad kalibreerimisväärtused on näited. Asenda need oma anduri kuiva ja märja näiduga.
 
 Näitekood:
+
 ~~~cpp
-#define Rled 4 //punast LEDi juhime selle viiguga
-#define	Gled 3 //rohelist LEDi juhime selle viiguga
-#define	Bled 2 //sinist LEDi juhime selle viiguga
-#define niiskus A0 //senori andmeid loeme selle viiguga
-void setup()
-{
-  pinMode(Rled, OUTPUT);
-  pinMode(Gled, OUTPUT);
-  pinMode(Bled, OUTPUT);
-  Serial.begin(9600); //alustame Serial ühenduse, et oleks kuhugi andmeid kirjutada
+const int PUNANE_LED = 4;
+const int ROHELINE_LED = 3;
+const int SININE_LED = 2;
+const int ANDURI_VIIK = A0;
+
+// Asenda need oma anduri kalibreerimisel saadud väärtustega.
+const int KUIV_NAIT = 876;
+const int MARG_NAIT = 0;
+
+void setup() {
+  pinMode(PUNANE_LED, OUTPUT);
+  pinMode(ROHELINE_LED, OUTPUT);
+  pinMode(SININE_LED, OUTPUT);
+  Serial.begin(9600);
 }
 
-void loop()
-{
-  int niiskusData=analogRead(niiskus); //loeme sensori andmed
-  //Kirjutame toored andmed Serial ühenduse peale
-  Serial.print("Andur tagastas: ");
-  Serial.println(niiskusData);
-  int led=map(niiskusData,0,876,0,2); //vastustame toored andmed kolme võrdsesse vahemikku
-  if(led==0){ //esimene vahemik, punane LED põleb = liiga kuiv
-   digitalWrite(Rled, HIGH);
-   digitalWrite(Gled, LOW);
-   digitalWrite(Bled, LOW); 
-  }else if(led==1){ // teine vahemik, roheline LED põleb = paras niiskus
-   digitalWrite(Rled, LOW);
-   digitalWrite(Gled, HIGH);
-   digitalWrite(Bled, LOW);
-  }else if(led==2){ // kolmas vahemik, sinine LED põleb = liiga niiske
-   digitalWrite(Rled, LOW);
-   digitalWrite(Gled, LOW);
-   digitalWrite(Bled, HIGH);
+void loop() {
+  int toorNait = analogRead(ANDURI_VIIK);
+
+  int niiskusProtsent =
+      map(toorNait, KUIV_NAIT, MARG_NAIT, 0, 100);
+  niiskusProtsent = constrain(niiskusProtsent, 0, 100);
+
+  Serial.print("Anduri toornäit: ");
+  Serial.print(toorNait);
+  Serial.print(", suhteline niiskus: ");
+  Serial.print(niiskusProtsent);
+  Serial.println(" %");
+
+  if (niiskusProtsent < 33) {
+    // Kuiv: põleb punane LED.
+    digitalWrite(PUNANE_LED, HIGH);
+    digitalWrite(ROHELINE_LED, LOW);
+    digitalWrite(SININE_LED, LOW);
+  } else if (niiskusProtsent < 67) {
+    // Paras niiskus: põleb roheline LED.
+    digitalWrite(PUNANE_LED, LOW);
+    digitalWrite(ROHELINE_LED, HIGH);
+    digitalWrite(SININE_LED, LOW);
+  } else {
+    // Väga niiske: põleb sinine LED.
+    digitalWrite(PUNANE_LED, LOW);
+    digitalWrite(ROHELINE_LED, LOW);
+    digitalWrite(SININE_LED, HIGH);
   }
-  delay(100);
+
+  delay(500);
 }
 ~~~
