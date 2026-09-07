@@ -1,54 +1,73 @@
 # TMP36 temperatuuriandur
 
-TMP36 on levinud temperatuuriandur. Anduri tööpõhimõte põhineb sisseehitatud termoelektrilisel elemendil, mis teisendab mõõdetud temperatuuri lineaarseks analoogpinge signaaliks. TMP36 väljundpinge on proportsionaalne temperatuuriga: iga 1 °C muutus põhjustab umbes 10 mV pingekõikumist. Näiteks annab andur 0 °C juures pingeks umbes 500 mV ja 25 °C juures umbes 750 mV, millest on lihtne arvutada tegelik temperatuur, kasutades valemit, mis arvestab nii lineaarset nihket kui ka pinge muutust. Andur töötab toitepinge vahemikus 2,7V kuni 5,5V
+TMP36 on analoogväljundiga pooljuht-temperatuuriandur. Anduri sees olev pooljuhtahel tekitab mõõdetud temperatuuriga võrdelise väljundpinge. TMP36 ei ole termopaar ega kasuta termoelektrilist elementi.
 
-TMP36 andureid on võimalik leida erinevates korpustes või pakendi tüüpides *(ingl package type)* Meie vaatame siin kõige levinumat TO-92 pakendis TMP36 andurit. Selles pakendis on anduril kolm viiku - toitepinge (1), väljund (2) ja maandus (3).
+Anduri väljundpinge muutub temperatuuri muutumisel ligikaudu 10 mV iga Celsiuse kraadi kohta. Temperatuuril 0 °C on väljundpinge ligikaudu 500 mV ja temperatuuril 25 °C ligikaudu 750 mV. Seda 500 mV nihet kasutatakse selleks, et andur saaks ühe toiteallikaga mõõta ka nullist madalamaid temperatuure.
 
-![TMP36 viikude skeem](meedia/TMP36_TO-92.png)
+TMP36 töötab toitepingega 2,7–5,5 V ja selle määratud mõõtevahemik on −40…+125 °C. Tüüpiline mõõteviga on ligikaudu ±1 °C temperatuuril 25 °C ja ±2 °C kogu määratud mõõtevahemikus. Tegelik mõõteviga sõltub anduri variandist, toitepingest, ühendusest ja kasutustingimustest.
 
-*Allikas: https://www.arduino.cc/en/uploads/Main/TemperatureSensor.pdf*
+Selles õppematerjalis kasutatakse kolmes jalaga TO-92 korpuses TMP36 andurit. Selle viigud on toide (1), väljund (2) ja maandus (3).
 
-Anduri väljundist loetava pinge ja mõõdetava temperatuuri suhet kirjeldab järgmisel graafikul joon b. Nagu näeme on tegemist lineaarse suhtega. Graafikult saame välja lugeda, et sensori mõõtevahemik on -40°C - 125°C 
+**NB!** Andmelehel on TO-92 korpuse viigud näidatud altvaates. Enne anduri ühendamist kontrolli viikude järjekorda andmelehe ja konkreetse komponendi tähistuse järgi. Vale polaarsusega ühendamine võib andurit kahjustada.
 
-![TMP36 näidu teisaldamise graafik](meedia/TMP36_graafik.png)
+![TMP36 viikude skeem altvaates](meedia/TMP36_TO-92.png)
 
-Allikas: https://www.arduino.cc/en/uploads/Main/TemperatureSensor.pdf
+*Allikas: [TMP35/TMP36/TMP37 andmeleht](https://www.arduino.cc/en/uploads/Main/TemperatureSensor.pdf)*
 
-## TMP36 liidestamine Arduino UNO-ga ja näidu teisendamine Celsiuse kraadideks
+Järgmisel graafikul kirjeldab TMP36 väljundpinge ja temperatuuri suhet joon **b**. Tegemist on ligikaudu lineaarse suhtega.
 
-Arduino UNO puhul on mõistlik kasutada TMP36 toitepingeks 5V. Maanduseks sobib ükskõik milline Arduino GND viik. Anduri näitu loeme analoogviiguga.
+![TMP36 väljundpinge ja temperatuuri graafik](meedia/TMP36_graafik.png)
 
-Peale analoogviigult näidu lugemist (saame täisarvu vahemikus 0 - 1023), tuleb see teisalda voltideks. Seda saame teha järgmiselt:
+*Allikas: [TMP35/TMP36/TMP37 andmeleht](https://www.arduino.cc/en/uploads/Main/TemperatureSensor.pdf)*
 
-$voldid=sensori\_{näit}*(5/1023)$
+TMP36 mõõdab oma korpuse temperatuuri. Õhutemperatuuri mõõtmisel peab õhk pääsema anduri ümber liikuma. Eseme pinnatemperatuuri hindamiseks peab andur olema pinnaga heas soojuslikus kontaktis.
 
-Ülaltoodud graafikult näeme, et 0 kraadi Celsiuse juures on sensori näit 0.5V - see on meie nihe. Samuti näeme, et sensori väljundi muutus 0.1V tähendab temperatuuri kasvu 10 kraadi Celsiuse võrra. Seega saame temperatuuri arvutada järgmiselt:
+## TMP36 ühendamine Arduino UNO-ga ja temperatuuri arvutamine
 
-$temperatuur=(voldid-0.5)*100$
+Ühenda TMP36 toiteviik Arduino 5 V viiguga, maandusviik GND-ga ja väljundviik analoogsisendiga A0.
 
-![TMP36 ühendamise näide](meedia/TMP36näide.png)
-[Interaktiivne simulatsioon](https://www.tinkercad.com/things/aYrG2vh1uUn-tmp36?sharecode=k2pp1kucaxTrZC0PG6rnkitRuZ47a5o3cB9-ljA1rHg)
+Nii Arduino UNO R3 kui ka UNO R4 WiFi tagastavad funktsiooniga `analogRead()` vaikimisi täisarvu vahemikus 0–1023. Näidu saab teisendada pingeks järgmise valemiga:
+
+$$
+pinge = analoogNäit \times \frac{5{,}0}{1023}
+$$
+
+Arvutus eeldab, et analoog-digitaalmuunduri tugipinge on täpselt 5,0 V. Tegelik toite- ja tugipinge võib sellest veidi erineda ning põhjustada mõõtetulemuses täiendava vea.
+
+TMP36 väljundpinge on temperatuuril 0 °C ligikaudu 0,5 V ning muutub 0,01 V iga Celsiuse kraadi kohta. Temperatuuri saab arvutada järgmise valemiga:
+
+$$
+temperatuur = (pinge - 0{,}5) \times 100
+$$
+
+![TMP36 ühendamine Arduino UNO-ga](meedia/TMP36näide.png)
+
+[Katseta ühendust Tinkercadi simulatsioonis](https://www.tinkercad.com/things/aYrG2vh1uUn-tmp36?sharecode=k2pp1kucaxTrZC0PG6rnkitRuZ47a5o3cB9-ljA1rHg)
+
+Tinkercadi näide ja ühendusjoonis kasutavad Arduino UNO R3 plaati. Samad viigud, ühenduspõhimõte ja programmikood sobivad ka Arduino UNO R4 WiFi plaadile, kui kasutatakse vaikimisi 10-bitist analoog-digitaalmuunduri resolutsiooni.
 
 Näitekood:
+
 ~~~cpp
-#define tmp36 A0 //loeme andurit A0 viigu kaudu
-float voldid, temperatuur;
+const int TMP36_VIIK = A0;
+const float TUGIPINGE = 5.0;
+const float ADC_SUURIM_NAIT = 1023.0;
 
 void setup() {
-  Serial.begin(9600); //alustame Serial üheduse, et oleks kuhugi andmeid saata
+  Serial.begin(9600);
 }
 
 void loop() {
-  int tmp36Data = analogRead(tmp36);// Loeme anduri väärtuse
-  voldid = tmp36Data * (5.0 / 1023.0); // Teisendame väärtuse pingeks
-  temperatuur = (voldid - 0.5) * 100.0;  // Teisendame pingest temperatuuriks
-  //kirjutame andmed välja Serial ühenduse peale
-  Serial.print("Moodetud pinge: ");
-  Serial.print(voldid);
-  Serial.print(" V, Temperatuur: ");
-  Serial.print(temperatuur);
-  Serial.println(" *C");
-  delay(1000);  // Ootame 1 sekundi enne järgmist mõõtmist
-}
+  int analoogNait = analogRead(TMP36_VIIK);
+  float pinge = analoogNait * (TUGIPINGE / ADC_SUURIM_NAIT);
+  float temperatuur = (pinge - 0.5) * 100.0;
 
+  Serial.print("Mõõdetud pinge: ");
+  Serial.print(pinge, 3);
+  Serial.print(" V, temperatuur: ");
+  Serial.print(temperatuur, 1);
+  Serial.println(" °C");
+
+  delay(1000);
+}
 ~~~

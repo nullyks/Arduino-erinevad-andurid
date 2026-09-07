@@ -1,57 +1,44 @@
-### näitekood
+# Tajutava temperatuuri näitekood
+
+Näide kasutab Adafruiti DHT teeki, mille paigaldamist kirjeldab [DHT22 peatükk](../5_DHT22_andur.md).
 
 ~~~cpp
 #include <DHT.h>
 
-// DHT sensor setup
-#define DHTPIN 2        // Sensor on ühendatud digitaalsisendisse 2
-#define DHTTYPE DHT22   // Kasutame DHT22 sensorit
+const int DHT_VIIK = 2;
+const int DHT_TUUP = DHT22;
 
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHT_VIIK, DHT_TUUP);
 
 void setup() {
-    Serial.begin(9600);
-    dht.begin();
+  Serial.begin(9600);
+  dht.begin();
 }
 
 void loop() {
-    float T = dht.readTemperature();  // Temperatuur Celsiuse järgi
-    float R = dht.readHumidity();     // Õhuniiskus protsentides
+  // DHT22 vajab mõõtmiste vahel vähemalt ligikaudu kaks sekundit.
+  delay(2000);
 
-    if (isnan(T) || isnan(R)) {
-        Serial.println("Sensorilt lugemine ebaõnnestus!");
-        return;
-    }
+  float temperatuur = dht.readTemperature();
+  float ohuniiskus = dht.readHumidity();
 
-    // Heat Index arvutamine vastavalt valemile
-    float HI = heatIndex(T, R);
+  if (isnan(temperatuur) || isnan(ohuniiskus)) {
+    Serial.println("DHT22 lugemine ebaõnnestus.");
+    return;
+  }
 
-    Serial.print("Temperatuur: ");
-    Serial.print(T);
-    Serial.print(" °C, Õhuniiskus: ");
-    Serial.print(R);
-    Serial.print(" %, Heat Index: ");
-    Serial.print(HI);
-    Serial.println(" °C");
+  // Kolmas argument false tähendab, et kasutame Celsiuse kraade.
+  float kuumaindeks =
+      dht.computeHeatIndex(temperatuur, ohuniiskus, false);
 
-    delay(2000);  // Oota 2 sekundit enne uut mõõtmist
-}
-
-// Heat Index'i arvutamise funktsioon
-float heatIndex(float T, float R) {
-    float c1 = -8.78469475556;
-    float c2 = 1.61139411;
-    float c3 = 2.33854883889;
-    float c4 = -0.14611605;
-    float c5 = -0.012308094;
-    float c6 = -0.0164248277778;
-    float c7 = 0.002211732;
-    float c8 = 0.00072546;
-    float c9 = -0.000003582;
-
-    return c1 + (c2 * T) + (c3 * R) + (c4 * T * R) + 
-           (c5 * T * T) + (c6 * R * R) + 
-           (c7 * T * T * R) + (c8 * T * R * R) + 
-           (c9 * T * T * R * R);
+  Serial.print("Temperatuur: ");
+  Serial.print(temperatuur, 1);
+  Serial.print(" °C, suhteline õhuniiskus: ");
+  Serial.print(ohuniiskus, 1);
+  Serial.print(" %, kuumaindeks: ");
+  Serial.print(kuumaindeks, 1);
+  Serial.println(" °C");
 }
 ~~~
+
+Kuumaindeks on mõeldud eelkõige kuumade ja niiskete tingimuste hindamiseks. Jahedamate tingimuste korral ei kirjelda tulemus üldist soojusmugavust.
