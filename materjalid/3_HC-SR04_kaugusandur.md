@@ -1,95 +1,89 @@
-# HC-SR04 ultrahelipõhine kaugusandur
+# HC-SR04 ultraheli-kaugusandur
 
-Anduri tööpõhimõte põhineb ultraheli levikul ja kajaefektil. HC-SR04 saadab lühikese kindla mustriga ultraheli impulsi (tavaliselt 40 kHz sagedusel), mis levib õhus ja tabab lähedal asuvat objekti. Kui impulss tabab objekti, peegeldub see tagasi anduri poole ning andur registreerib peegelduse.   
+HC-SR04 mõõdab kaugust ultraheli levimisaja põhjal. Mõõtmise alustamisel saadab andur välja kaheksast 40 kHz ultraheliperioodist koosneva signaali. Heli peegeldub takistuselt tagasi ning andur mõõdab signaali edasi-tagasi liikumiseks kulunud aega.
+
+Anduri määratud mõõtevahemik on ligikaudu 2–400 cm. Tootja esitatud parim lahutusvõime on umbes 3 mm, kuid tegelik tulemus sõltub objekti suurusest, kujust, pinnast, nurgast ja keskkonnatingimustest.
 
 ![HC-SR04 ultraheliandur](meedia/HC-SR04.png)
 
-*Allikas: https://www.digikey.com/htmldatasheets/production/1979760/0/0/1/HC-SR04.pdf*
+*Allikas: [HC-SR04 andmeleht](https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf)*
 
-## HC-SR04 liidestamine Arduino UNO-ga ja näidu teisendamine sentimeetriteks
+## HC-SR04 ühendamine Arduino UNO-ga
 
-Anduril on neli viiku: VCC (1), Trig (2), Echo (3) ja GND (4).
-VCC (1) ja GND (4) on vastavalt toite ning maanduse jaoks. Andur vajab 5V pingega toidet voolutugevusega 15 mA.
+Anduril on neli viiku:
 
-Trig (2) viigu kaudu käivitatakse kaugusmõõtmine, saates sinna 10uS pikkuse vooluimpulsi. Selleks sobib suvaline Arduino UNO digitaalviik.
-Peale selle impulsi saamist saadab andur välja ultraheliimpulsi ja paneb 5V voolu Echo (3) viigule. Kui Andur registreeib saadetud ultraheliimpulsi tagasipeegeldumise, siis muutub pinge Echo (3) viigul 0-ks. Samuti juhtub see kui peegeldust ei registreerita 38 ms jooksul  - see tähendab, et anduri maksimaalses mõõtekauguses (400 cm) ei ole ühtegi takistust. 
+1. **VCC** – 5 V toide;
+2. **Trig** – mõõtmise käivitamise sisend;
+3. **Echo** – kaja levimisajale vastava impulsi väljund;
+4. **GND** – maandus.
 
-Seega on võimalik mõõta 5V impulsi ajalist pikkust Echo (3) viigul ja teades heli levimise kiirust arvutada välja kui kaugel on takistus. Meeles tuleb pidada, et helilained läbivad peegeldudes kauguse kaks korda, seega tuleb tulemus jagada kahega.
+Anduri tüüpiline töövool on umbes 15 mA. Ühenda VCC Arduino 5 V viiguga ja GND Arduino GND-viiguga. Trig- ja Echo-viigud ühendatakse Arduino digitaalviikudega.
+
+Mõõtmise käivitamiseks seatakse Trig-viik vähemalt 10 mikrosekundiks olekusse `HIGH`. Seejärel saadab andur ultrahelisignaali ja seab Echo-väljundi olekusse `HIGH`. Echo-väljund jääb kõrgesse olekusse ajaks, mis kulub ultrahelil objektini ja tagasi liikumiseks.
+
+Echo-viigu impulsi kestuse põhjal saab kauguse arvutada valemiga:
+
+$$
+kaugus = \frac{impulsi\ kestus \times heli\ kiirus}{2}
+$$
+
+Toatemperatuuril võib heli kiiruseks kasutada ligikaudu 0,0343 cm/µs. Tulemus jagatakse kahega, sest mõõdetud aeg sisaldab nii teekonda andurist objektini kui ka tagasi.
+
+Kui sobivat kaja ei leita, võib Echo-signaal kesta kümneid millisekundeid. Programm peab sellist olukorda eraldi käsitlema ega tohi puuduvat kaja tõlgendada nullsentimeetrise kaugusena.
 
 ![HC-SR04 anduri ühendamine Arduino UNO-ga](meedia/HC-SR04näide.png)
 
-[Interaktiivne simulatsioon](https://www.tinkercad.com/things/dtUHvXsMKNP-hc-sr04?sharecode=o7Vm0Tu1vb1w4WIx2713XlgD4eDhw3NN5Mk8uaHOkqo)
+**NB!** Pildi paremas servas on varasem programmiversioon. Kasuta pilti ühenduse koostamiseks ja programmi jaoks allpool olevat ajakohastatud koodinäidet, milles on arvestatud ka puuduva kajaga.
+
+[Katseta ühendust Tinkercadi simulatsioonis](https://www.tinkercad.com/things/dtUHvXsMKNP-hc-sr04?sharecode=o7Vm0Tu1vb1w4WIx2713XlgD4eDhw3NN5Mk8uaHOkqo)
+
+Tinkercadi näide ja ühendusjoonis kasutavad Arduino UNO R3 plaati. Samad viigud, ühenduspõhimõte ja programmikood sobivad ka Arduino UNO R4 WiFi plaadile.
 
 Koodinäide:
 ~~~cpp
-#define trigPin 2
-#define echoPin 3
-#define helikiirus 0.0343 
-//cm mikrosekundis
+const int TRIG_VIIK = 2;
+const int ECHO_VIIK = 3;
+const float HELI_KIIRUS = 0.0343;          // cm/µs
+const unsigned long KAJA_AJALIMIIT = 30000; // µs
 
-long pikkus;
-float kaugus;
-
-void setup()
-{
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+void setup() {
+  pinMode(TRIG_VIIK, OUTPUT);
+  pinMode(ECHO_VIIK, INPUT);
+  digitalWrite(TRIG_VIIK, LOW);
   Serial.begin(9600);
 }
 
-void loop()
-{
-  // trig viigu peal signaal madalaks
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  // seame trig viigu peal signaal kõrgeks 10-ks mikrosekundiks
-  // selle peale saadetakse välja ultraheli signaal ja
-  // echo viigu väärtus seatakse HIGH olekusse, kuni sensor tuvastab
-  // ultrahelisignaali tagasipeegeldumise või kuni möödud 38 millisekundit.
-  // Mõlemal juhul läheb echo viigu väärtus LOW olekusse.
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  // pulseIn() funktsioon mõõdab mitu mikrosekundit on echo viik olekus HIGH
-  pikkus = pulseIn(echoPin, HIGH);
-  //arvutame kui pika maa pidi ultrahelisignaal läbima saatmisest
-  //kuni kinnipüüdmiseni peale tagasipeegeldumist. 
-  kaugus = pikkus * helikiirus;
-  //nüüd on meil ultrahelisignaali poolt läbitud teekond sentimeetrites, 
-  //aga see tuleb jagada kahega, sest signaal peegeldus tagasi e.
-  //läbis teekonna takistuseni kaks korda.
-  kaugus = kaugus/2;
-  //Kirjutame saadud tulemuse välja
-  Serial.print("Kaugus cm: ");
-  Serial.println(kaugus);
-}
-~~~
-
-Ülaltoodud koodi katsetades võime märgata mõningaid ebatäpsusi mõõtetulemustes. Veidi parema tulemuse peaksime saama kui kasutame Tim Eckeli poolt loodud [NewPing teeki](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home).
-
-Koodinäide:
-~~~cpp
-// Include NewPing Library
-#include "NewPing.h"
-
-// Hook up HC-SR04 with Trig to Arduino Pin 9, Echo to Arduino pin 10
-#define TRIGGER_PIN 2
-#define ECHO_PIN 3
-
-// Maximum distance we want to ping for (in centimeters).
-#define MAX_DISTANCE 400	
-
-// NewPing setup of pins and maximum distance.
-NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
-
-void setup() {
-	Serial.begin(9600);
-}
-
 void loop() {
-	Serial.print("Distance = ");
-	Serial.print(sonar.ping_cm());
-	Serial.println(" cm");
-	delay(500);
+  // Käivitame mõõtmise vähemalt 10 µs pikkuse impulsiga.
+  digitalWrite(TRIG_VIIK, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_VIIK, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_VIIK, LOW);
+
+  // Mõõdame Echo-signaali kestust, kuid ootame kõige rohkem 30 ms.
+  unsigned long impulsiKestus =
+      pulseIn(ECHO_VIIK, HIGH, KAJA_AJALIMIIT);
+
+  if (impulsiKestus == 0) {
+    Serial.println("Sobivat kaja ei tuvastatud.");
+  } else {
+    float kaugus = impulsiKestus * HELI_KIIRUS / 2.0;
+
+    Serial.print("Kaugus: ");
+    Serial.print(kaugus, 1);
+    Serial.println(" cm");
+  }
+
+  // Andmeleht soovitab mõõtmiste vahele vähemalt 60 ms.
+  delay(60);
 }
 ~~~
+
+## Lisamaterjalid
+
+Selles peatükis kasutatud näitekood ei vaja eraldi teeki ning töötab nii Arduino UNO R3 kui ka UNO R4 WiFi plaadil.
+
+Kui soovid ultrahelianduri juhtimise oma programmis teegi abil lihtsamaks muuta, saad Arduino IDE Library Managerist paigaldada teegi **Ultrasonic by Erick Simões**. Teek toetab HC-SR04 andurit ja võimaldab määrata puuduva kaja jaoks ajalimiidi.
+
+[Ultrasonic teek ja kasutusnäited](https://github.com/ErickSimoes/Ultrasonic)

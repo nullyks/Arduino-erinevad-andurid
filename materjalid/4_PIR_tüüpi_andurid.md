@@ -1,48 +1,70 @@
-# PIR andurid
+# HC-SR501 PIR-liikumisandur
 
-PIR andur e. passiivne infrapuna andur *(ingl Passive Infrared sensor)* on sensor, mida kasutatakse liikumise tuvastamiseks, mõõtes infrapuna kiirguse muutusi ümbritsevas keskkonnas. See töötab nii, et seade ei saada ise välja mingeid signaale, vaid ainult registreerib olemasolevat infrapuna kiirgust, mida kiirgavad kõik soojad objektid, näiteks inimesed ja loomad.
+PIR-andur ehk passiivne infrapunaandur (ingl *passive infrared sensor*) tuvastab oma vaateväljas infrapunakiirguse jaotuse muutusi. Andur on passiivne, sest see ei kiirga ise mõõtesignaali välja.
 
-Anduri tööpõhimõte põhineb infrapuna energia muutumise tuvastamisel. Lihtsamad PIR andurid reageerivad mõõdetava infrapuna taseme muutumisele teatud ajaperioodi jooksul ning kui see ületab etteantud piiri, siis saadavad väljundviigule signaali, mis tähistab liikumist. Keerukamatel PIR anduritel võib olla mitu infrapuna detektorit, mis asetsevad erineva nurga all, kuid omavad kattuvat vaatevälja ja mis võrdlevad mõõdetava infrapunakiirguse taset - see võimaldab vähendada valepositiivseid tulemusi.
+Inimesed, loomad ja teised ümbritsevast keskkonnast erineva temperatuuriga objektid kiirgavad infrapunakiirgust. Kui selline objekt liigub läbi PIR-anduri vaatevälja, muutub andurile langeva infrapunakiirguse jaotus ning moodul väljastab liikumist tähistava digitaalsignaali.
 
-Pildil on lihtne PIR andur mudel: HC-SR501
+PIR-andur ei mõõda objekti kaugust ega tuvasta usaldusväärselt täiesti liikumatut objekti. Tuvastamist mõjutavad objekti ja tausta temperatuuride erinevus, liikumise suund ja kiirus ning anduri paigutus.
 
-![PIR anduri skeem](meedia/HC-SR501.png)
+![HC-SR501 PIR-liikumisandur](meedia/HC-SR501.png)
 
-*Allikas: https://static.rapidonline.com/pdf/74-1108_v2.pdf*
+*Allikas: [HC-SR501 andmeleht](https://static.rapidonline.com/pdf/74-1108_v2.pdf)*
 
-## HC-SR501 liidestamine Arduino UNO-ga
+## HC-SR501 ühendamine Arduino UNO-ga
 
-Anduril on väliste kontrolleritega liidestamiseks kolm viiku: toide (1), signaal (2) ja maandus (3). Toide (1) ühendatakse Arduino 5V viiguga ja maandus (3) Arduino GND viiguga. Signaal (2) edastab sensori infot andes pinge 3.3 V (liikumine) või 0 V (liikumist pole). Signaal viiku saab lugeda Arduino Uno digitaalse viigu abil. 
+Moodulil on kolm ühendusviiku:
 
+1. **VCC** – toide;
+2. **OUT** – digitaalne väljundsignaal;
+3. **GND** – maandus.
 
-Sensoril endal on ka kaks potentsiomeetrit, millest esimene muudab sensori tundlikust - sisuliselt kui kaugelt sensor liikumist mõõdab (3m - 7m) ja teine signaalipikkust - kui kaua on liigumise tuvastamise puhul signaalviigul pinge 3.3V (5 - 300 sekundit).
+Ühenda VCC Arduino 5 V viiguga ja GND Arduino GND-viiguga. OUT-väljund on liikumise tuvastamisel ligikaudu 3,3 V ehk `HIGH` ning muul ajal 0 V ehk `LOW`. Seda signaali saab lugeda Arduino digitaalviiguga.
 
-Lisaks on anduril veel töörežiimi viigud L ja H, mille lühistamisel maandusega saab valida korduvsignaali (H) ja mitte-korduvsignaali (L) vahel. Korduvsignaali puhul pannakse liikumise tuvastamisel signaalviigule pinge 3.3V ja see püsib seal signaalipikkuse lõpuni, misjärel pinge muutub 0V peale. Kui liikumine jätkub, siis siis kogu tsükkel kordub. Mitte-korduvsignaali puhul jääb 3.3V pinge signaalviigule kuni liikumise lõpuni pluss signaalipikkusega määratud aeg.
+**NB!** HC-SR501 moodulite viikude järjestus võib tootjast ja mudeliversioonist sõltuda. Enne ühendamist kontrolli alati moodulile trükitud tähiseid.
 
-![PIR anduri ühendamise näide Arduinoga](meedia/PIRnäide.png)
+Moodulil on tavaliselt kaks potentsiomeetrit. Ühega reguleeritakse tundlikkust ehk ligikaudset tuvastuskaugust ja teisega aega, mille jooksul väljund pärast liikumise tuvastamist olekus `HIGH` püsib. Tüüpiline reguleerimisvahemik on ligikaudu 3–7 m ja 5–300 sekundit.
 
-**NB!** simulatsioonikeskkonnas on PIR anduri viikudel teistsugune järjekord.
+## Töörežiimid
 
-[Interaktiivne simulatsioon](https://www.tinkercad.com/things/b2YLlguiArg-pir?sharecode=IIPz14-d-o6l_lRT_WNYv8WO_wRXWH9aG-wpDeXfDD0)
+Jumperiga saab valida kahe töörežiimi vahel:
+
+* **L – mittekorduv režiim:** liikumise tuvastamisel läheb väljund määratud ajaks olekusse `HIGH`. Selle aja jooksul tuvastatud uus liikumine aktiivset aega ei pikenda.
+* **H – korduv režiim:** kui aktiivse aja jooksul tuvastatakse uus liikumine, alustatakse viiteaja arvestamist uuesti. Väljund võib seetõttu püsida olekus `HIGH` kogu liikumise vältel ja lülituda olekusse `LOW` alles pärast viimase liikumise järel möödunud viiteaega.
+
+Pärast väljundi naasmist olekusse `LOW` võib moodulil olla lühike blokeerimisaeg, mille jooksul uut liikumist ei tuvastata.
+
+Pärast toite ühendamist vajab PIR-andur keskkonnaga kohanemiseks tavaliselt mõnikümmend sekundit. Selle aja jooksul võib väljund ilma tegeliku liikumiseta olekute `HIGH` ja `LOW` vahel muutuda.
+
+![PIR-liikumisanduri ühendamine Arduino UNO-ga](meedia/PIRnäide.png)
+
+**NB!** Tinkercadi simulatsioonis kasutatava PIR-anduri viikude järjestus erineb joonisel oleva HC-SR501 mooduli viikude järjestusest.
+
+[Katseta ühendust Tinkercadi simulatsioonis](https://www.tinkercad.com/things/b2YLlguiArg-pir?sharecode=IIPz14-d-o6l_lRT_WNYv8WO_wRXWH9aG-wpDeXfDD0)
+
+Tinkercadi näide ja ühendusjoonis kasutavad Arduino UNO R3 plaati. Samad viigud, ühenduspõhimõte ja programmikood sobivad ka Arduino UNO R4 WiFi plaadile.
+
+Tinkercadi ühendusjoonisel kasutatakse LED-iga 220 Ω takistit. Füüsilise Arduino UNO R3 või UNO R4 WiFi ühenduse korral kasuta 470 Ω takistit, mis hoiab LED-i voolu mõlema plaadi jaoks sobivas vahemikus.
 
 Koodinäide:
+
 ~~~cpp
-#define pir 3 //selle viigu kaudu loeme PIR-i näitu
-#define led 2 //selle viigu abil juhime LED-i
-void setup()
-{
-  pinMode(led, OUTPUT);
-  pinMode(pir, INPUT);
+const int PIR_VIIK = 3;
+const int LED_VIIK = 2;
+
+void setup() {
+  pinMode(PIR_VIIK, INPUT);
+  pinMode(LED_VIIK, OUTPUT);
 }
 
-void loop()
-{
-  int pirData=digitalRead(pir); //loeme PIR näidu
-  if(pirData==HIGH){ //kui on liikumine
-  	digitalWrite(led, HIGH); //LED põlema
-  }else{ //kui ei ole liikumist
-  	digitalWrite(led, LOW);//LED kustu
+void loop() {
+  int liikumine = digitalRead(PIR_VIIK);
+
+  if (liikumine == HIGH) {
+    digitalWrite(LED_VIIK, HIGH);
+  } else {
+    digitalWrite(LED_VIIK, LOW);
   }
+
   delay(100);
 }
 ~~~
